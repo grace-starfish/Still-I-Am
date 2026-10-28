@@ -6,48 +6,49 @@
 <meta name="theme-color" content="#f7f3ed">
 <title>Still, I Am.｜我還在這裡</title>
 <style>
-:root{
-  --bg:#f7f3ed;--paper:#fffdf9;--ink:#292722;--muted:#7d786f;
-  --line:#e7e0d6;--accent:#6f7567;--accent2:#b69a7c;--danger:#9b5757;
-}
-*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
-.wrap{max-width:760px;margin:auto;padding:22px 16px 90px}
-header{padding:10px 2px 18px} h1{font-family:Georgia,serif;font-weight:500;font-size:34px;margin:0}
-.sub{color:var(--muted);margin-top:5px}.card{background:var(--paper);border:1px solid var(--line);
-border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 4px 18px rgba(50,40,30,.035)}
-textarea{width:100%;min-height:110px;border:0;resize:vertical;background:transparent;color:var(--ink);
-font:inherit;font-size:17px;line-height:1.6;outline:none}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}
-button,.filebtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;
-font:inherit;color:var(--ink);cursor:pointer}.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+:root{--bg:#f7f3ed;--paper:#fffdf9;--ink:#292722;--muted:#7d786f;--line:#e7e0d6;--accent:#6f7567;--accent2:#b69a7c;--danger:#9b5757}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
+.wrap{max-width:760px;margin:auto;padding:22px 16px 90px}header{padding:10px 2px 18px}h1{font-family:Georgia,serif;font-weight:500;font-size:34px;margin:0}.sub{color:var(--muted);margin-top:5px;line-height:1.5}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 4px 18px rgba(50,40,30,.035)}
+textarea{width:100%;min-height:110px;border:0;resize:vertical;background:transparent;color:var(--ink);font:inherit;font-size:17px;line-height:1.6;outline:none}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1;min-width:0}
+button,.filebtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font:inherit;color:var(--ink);cursor:pointer}.primary{background:var(--ink);color:#fff;border-color:var(--ink)}button:disabled{opacity:.5;cursor:default}
 .small{font-size:14px;padding:8px 11px}.hint,.meta{color:var(--muted);font-size:13px}
-#preview{display:flex;gap:8px;overflow:auto;margin:10px 0}.thumb{width:72px;height:72px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+#preview,.editPreview{display:flex;gap:8px;overflow:auto;margin:10px 0}.previewItem{position:relative;flex:0 0 auto}.thumb{width:76px;height:76px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.removePhoto{position:absolute;right:-4px;top:-5px;width:26px;height:26px;padding:0;border-radius:50%;background:var(--ink);color:#fff;border:2px solid var(--paper);font-size:17px;line-height:20px}
+.whenbar{display:flex;align-items:center;gap:8px;margin:4px 0 12px;flex-wrap:wrap}.whenText{font-size:14px;color:var(--muted)}
+.whenPanel{border-top:1px solid var(--line);padding-top:12px;margin-top:8px}.dateRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dateRow input{width:100%;min-width:0;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;font:inherit;font-size:16px}
+.checkline{display:flex;gap:8px;align-items:center;margin:10px 0;color:var(--muted);font-size:14px}
 nav{display:flex;gap:7px;overflow:auto;padding:4px 0 8px}.tab.active{background:var(--ink);color:#fff}
 .day{margin-top:22px}.day h2{font-size:15px;color:var(--muted);font-weight:600;margin:0 0 8px}
-.entry{background:var(--paper);border-left:3px solid var(--accent2);padding:13px 14px;margin:8px 0;border-radius:4px 14px 14px 4px}
-.entry p{white-space:pre-wrap;line-height:1.65;margin:7px 0}.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-.photos img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}
-.actions{display:flex;gap:6px;justify-content:flex-end}.ghost{border:0;background:transparent;color:var(--muted);padding:5px 7px}
-.search{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:11px 14px;font:inherit}
-.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}
-.empty{text-align:center;color:var(--muted);padding:42px 10px}
-.summary{line-height:1.7}.stat{font-size:28px;font-family:Georgia,serif}
-footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
-.hidden{display:none!important}
-@media(max-width:520px){h1{font-size:30px}.wrap{padding-top:12px}.photos,.gallery{grid-template-columns:repeat(2,1fr)}}
+.entry{background:var(--paper);border-left:3px solid var(--accent2);padding:13px 14px;margin:8px 0;border-radius:4px 14px 14px 4px}.entry.starred{border-left-color:#8a754e}
+.entry p{white-space:pre-wrap;line-height:1.65;margin:7px 0}.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.photos img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}
+.actions{display:flex;gap:4px;justify-content:flex-end;align-items:center}.ghost{border:0;background:transparent;color:var(--muted);padding:7px 8px}.starBtn{font-size:19px}
+.search{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:11px 14px;font:inherit;font-size:16px}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}.empty{text-align:center;color:var(--muted);padding:42px 10px}
+.summary{line-height:1.7}.stat{font-size:28px;font-family:Georgia,serif}.rangeBtns{display:flex;gap:6px;margin:10px 0 14px}.rangeBtn.active{background:var(--ink);color:#fff}.summaryList{margin:12px 0;padding-left:20px}.summaryList li{margin:6px 0}
+.backupStats{margin:12px 0;font-size:14px;color:var(--muted)}
+.modalBack{position:fixed;inset:0;background:rgba(35,31,26,.35);display:flex;align-items:flex-end;justify-content:center;padding:12px;z-index:20}.modal{background:var(--paper);width:min(720px,100%);max-height:88vh;overflow:auto;border-radius:20px;padding:18px}.modal h3{margin:0 0 10px}.modal textarea{border:1px solid var(--line);border-radius:14px;padding:12px;min-height:120px}.modalActions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}.danger{color:var(--danger)}
+footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}.hidden{display:none!important}
+@media(max-width:520px){h1{font-size:30px}.wrap{padding-top:12px}.photos,.gallery{grid-template-columns:repeat(2,1fr)}.dateRow{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header><h1>Still, I Am.</h1><div class="sub">我還在這裡 · 只管留下，不要求完整。</div></header>
+<header><h1>Still, I Am.</h1><div class="sub">那些做過、看見過、感受過的，都算數。</div></header>
 
 <section class="card">
 <textarea id="text" placeholder="今天發生了什麼？一句話也可以。"></textarea>
 <div id="preview"></div>
+<div class="whenbar"><span id="whenText" class="whenText">🕒 現在</span><button id="changeWhen" class="ghost small">修改時間</button></div>
+<div id="whenPanel" class="whenPanel hidden">
+  <div class="dateRow"><input id="eventDate" type="date" aria-label="發生日期"><input id="eventTime" type="time" aria-label="大概時間"></div>
+  <label class="checkline"><input id="dateOnly" type="checkbox">只記得日期，不需要精確時間</label>
+  <button id="resetWhen" class="ghost small">改回現在</button>
+</div>
 <div class="row">
-<label class="filebtn small">📷 加照片<input id="photos" type="file" accept="image/*" multiple hidden></label>
-<span class="hint grow">也可以直接用 iPhone 鍵盤的麥克風口述。</span>
+<label class="filebtn small" id="photoLabel">📷 加照片<input id="photos" type="file" accept="image/*" multiple hidden></label>
+<span class="hint grow">可直接拍照或從相簿選；也可以用 iPhone 鍵盤麥克風口述。</span>
 <button id="save" class="primary">留下</button>
 </div>
 </section>
@@ -59,117 +60,158 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 <button class="tab" data-view="backup">備份</button>
 </nav>
 
-<div id="timelineView">
-<input id="search" class="search" placeholder="搜尋某個人、地方、JOJO、東京……">
-<div id="timeline"></div>
-</div>
-
+<div id="timelineView"><input id="search" class="search" placeholder="搜尋某個人、地方、JOJO、東京……"><div id="timeline"></div></div>
 <div id="galleryView" class="hidden"><div id="gallery" class="gallery"></div></div>
 
 <div id="summaryView" class="hidden">
 <div class="card summary">
-<div class="meta">最近 30 天</div>
-<div><span id="count30" class="stat">0</span> 筆留下來的片段</div>
+<div class="meta">不是成就表，是你留下來的生活。</div>
+<div class="rangeBtns"><button class="rangeBtn small" data-range="7">7 天</button><button class="rangeBtn small active" data-range="30">30 天</button><button class="rangeBtn small" data-range="year">今年</button></div>
+<div><span id="summaryCount" class="stat">0</span> 筆片段</div>
 <p id="summaryText"></p>
-<button id="copyRecent">複製最近紀錄</button>
-<button id="copyPrompt">✨ 複製給 GPT 整理</button>
+<ul id="summaryList" class="summaryList"></ul>
+<div class="row"><button id="copyRecent">複製這段紀錄</button><button id="copyPrompt">✨ 複製給 GPT 整理</button></div>
 </div>
 </div>
 
 <div id="backupView" class="hidden">
 <div class="card">
 <h3>把生活帶走</h3>
-<p class="hint">資料目前只存在這台裝置的瀏覽器。出發旅行前、旅行途中，建議定期匯出備份。</p>
-<div class="row">
-<button id="export">匯出備份 JSON</button>
-<label class="filebtn">匯入備份<input id="import" type="file" accept=".json,application/json" hidden></label>
-</div>
-<p class="hint">備份會包含文字與日記用壓縮照片；iPhone 相簿仍保留原始照片。</p>
+<p class="hint">資料目前只存在這台裝置的瀏覽器。旅行前與旅行途中，建議定期匯出備份。</p>
+<div id="backupStats" class="backupStats"></div>
+<div class="row"><button id="export">匯出備份 JSON</button><label class="filebtn">匯入備份<input id="import" type="file" accept=".json,application/json" hidden></label></div>
+<p class="hint">備份包含文字與日記用壓縮照片；iPhone 相簿仍保留原始照片。</p>
 </div>
 </div>
 
-<footer>Still, I Am. · V0.3 · Tokyo Build</footer>
+<footer>Still, I Am. · V0.3.1 · Tokyo Build</footer>
+</div>
+
+<div id="editBack" class="modalBack hidden" role="dialog" aria-modal="true" aria-label="編輯紀錄">
+<div class="modal">
+<h3>編輯這個片段</h3>
+<textarea id="editText"></textarea>
+<div class="dateRow"><input id="editDate" type="date" aria-label="發生日期"><input id="editTime" type="time" aria-label="大概時間"></div>
+<label class="checkline"><input id="editDateOnly" type="checkbox">只記得日期</label>
+<div id="editPreview" class="editPreview"></div>
+<label class="filebtn small">＋ 補照片<input id="editPhotos" type="file" accept="image/*" multiple hidden></label>
+<div class="modalActions"><button id="deleteEdit" class="ghost danger">刪除這筆</button><span class="grow"></span><button id="cancelEdit">取消</button><button id="saveEdit" class="primary">儲存修改</button></div>
+</div>
 </div>
 
 <script>
-const DB='still_i_am_db', STORE='entries'; let db, pending=[];
-function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=e=>e.target.result.createObjectStore(STORE,{keyPath:'id'});r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=()=>rej(r.error)})}
+const APP_VERSION='0.3.1';
+const DB='still_i_am_db', STORE='entries'; let db, pending=[], editing=null, summaryRange='30';
+const $=id=>document.getElementById(id);
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains(STORE))e.target.result.createObjectStore(STORE,{keyPath:'id'})};r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=()=>rej(r.error)})}
 function tx(mode='readonly'){return db.transaction(STORE,mode).objectStore(STORE)}
-function all(){return new Promise((res,rej)=>{const r=tx().getAll();r.onsuccess=()=>res(r.result.sort((a,b)=>b.created-a.created));r.onerror=()=>rej(r.error)})}
+function all(){return new Promise((res,rej)=>{const r=tx().getAll();r.onsuccess=()=>res(r.result.map(normalize).sort((a,b)=>eventStamp(b)-eventStamp(a)));r.onerror=()=>rej(r.error)})}
 function put(x){return new Promise((res,rej)=>{const r=tx('readwrite').put(x);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
 function del(id){return new Promise((res,rej)=>{const r=tx('readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function normalize(x){if(!x.created)x.created=Date.now();if(!x.eventAt)x.eventAt=x.created;if(typeof x.dateOnly!=='boolean')x.dateOnly=false;if(!Array.isArray(x.photos))x.photos=[];return x}
+function eventStamp(x){return x.eventAt||x.created}
 const esc=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const dt=t=>new Intl.DateTimeFormat('zh-TW',{month:'long',day:'numeric',weekday:'short'}).format(new Date(t));
-const tm=t=>new Intl.DateTimeFormat('zh-TW',{hour:'2-digit',minute:'2-digit'}).format(new Date(t));
-function fileData(f){
- return new Promise((res,rej)=>{
-  const reader=new FileReader();
-  reader.onerror=()=>rej(reader.error);
-  reader.onload=()=>{
-   const img=new Image();
-   img.onerror=()=>rej(new Error('照片讀取失敗'));
-   img.onload=()=>{
-    const MAX=1600;
-    let w=img.naturalWidth,h=img.naturalHeight;
-    const scale=Math.min(1,MAX/Math.max(w,h));
-    w=Math.max(1,Math.round(w*scale)); h=Math.max(1,Math.round(h*scale));
-    const c=document.createElement('canvas'); c.width=w; c.height=h;
-    const ctx=c.getContext('2d');
-    ctx.drawImage(img,0,0,w,h);
-    const data=c.toDataURL('image/jpeg',0.76);
-    res({name:(f.name||'photo').replace(/\.[^.]+$/,'.jpg'),type:'image/jpeg',data,width:w,height:h,optimized:true});
-   };
-   img.src=reader.result;
-  };
-  reader.readAsDataURL(f);
- });
-}
+const dayFmt=t=>new Intl.DateTimeFormat('zh-TW',{month:'long',day:'numeric',weekday:'short'}).format(new Date(t));
+const timeFmt=t=>new Intl.DateTimeFormat('zh-TW',{hour:'2-digit',minute:'2-digit'}).format(new Date(t));
+const ymd=d=>{const z=new Date(d);return `${z.getFullYear()}-${String(z.getMonth()+1).padStart(2,'0')}-${String(z.getDate()).padStart(2,'0')}`};
+const hm=d=>{const z=new Date(d);return `${String(z.getHours()).padStart(2,'0')}:${String(z.getMinutes()).padStart(2,'0')}`};
+function stampFrom(date,time,dateOnly){const parts=date.split('-').map(Number);if(parts.length!==3)return Date.now();if(dateOnly||!time)return new Date(parts[0],parts[1]-1,parts[2],12,0,0,0).getTime();const tt=time.split(':').map(Number);return new Date(parts[0],parts[1]-1,parts[2],tt[0]||0,tt[1]||0,0,0).getTime()}
 
-document.getElementById('photos').onchange=async e=>{
- const files=[...e.target.files].slice(0,8);
- if(!files.length)return;
- const btn=document.querySelector('label.filebtn');
- const oldText=btn.childNodes[0].nodeValue;
- btn.childNodes[0].nodeValue='⏳ 處理照片中 ';
+function compressPhoto(f){
+ return new Promise((res,rej)=>{
+  const reader=new FileReader();reader.onerror=()=>rej(reader.error);
+  reader.onload=()=>{const img=new Image();img.onerror=()=>rej(new Error('照片讀取失敗'));img.onload=()=>{
+   const MAX=1280;let w=img.naturalWidth,h=img.naturalHeight,scale=Math.min(1,MAX/Math.max(w,h));w=Math.max(1,Math.round(w*scale));h=Math.max(1,Math.round(h*scale));
+   const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);
+   let q=.72,data=c.toDataURL('image/jpeg',q);
+   while(data.length>900000&&q>.46){q-=.08;data=c.toDataURL('image/jpeg',q)}
+   res({name:(f.name||'photo').replace(/\.[^.]+$/,'.jpg'),type:'image/jpeg',data,width:w,height:h,optimized:true});
+  };img.src=reader.result};reader.readAsDataURL(f)
+ })
+}
+function previewHTML(list,edit=false){return list.map((p,i)=>`<div class="previewItem"><img class="thumb" src="${p.data}"><button class="removePhoto" type="button" data-i="${i}" data-edit="${edit?'1':'0'}" aria-label="移除照片">×</button></div>`).join('')}
+function renderPending(){ $('preview').innerHTML=previewHTML(pending); }
+$('preview').onclick=e=>{const b=e.target.closest('.removePhoto');if(!b)return;pending.splice(Number(b.dataset.i),1);renderPending();$('photos').value=''};
+
+async function addFiles(files,target){
+ const arr=[...files].slice(0,Math.max(0,8-target.length));if(!arr.length)return;
+ $('photoLabel').firstChild.nodeValue='⏳ 處理照片中 ';
+ try{const made=await Promise.all(arr.map(compressPhoto));target.push(...made)}
+ catch{alert('有一張照片無法處理，請重新選擇。')}
+ finally{$('photoLabel').firstChild.nodeValue='📷 加照片';}
+}
+$('photos').onchange=async e=>{await addFiles(e.target.files,pending);renderPending();e.target.value=''};
+
+function setNow(){const n=new Date();$('eventDate').value=ymd(n);$('eventTime').value=hm(n);$('dateOnly').checked=false;$('eventTime').disabled=false;$('whenText').textContent='🕒 現在'}
+setNow();
+$('changeWhen').onclick=()=>{$('whenPanel').classList.toggle('hidden')};
+$('dateOnly').onchange=()=>{$('eventTime').disabled=$('dateOnly').checked;updateWhenLabel()};
+$('eventDate').onchange=updateWhenLabel;$('eventTime').onchange=updateWhenLabel;
+$('resetWhen').onclick=()=>{setNow();$('whenPanel').classList.add('hidden')};
+function updateWhenLabel(){const d=$('eventDate').value;if(!d)return;$('whenText').textContent=$('dateOnly').checked?`📅 ${d}`:`🕒 ${d} ${$('eventTime').value||''}`}
+
+$('save').onclick=async()=>{
+ const text=$('text').value.trim();if(!text&&!pending.length)return;
+ $('save').disabled=true;
  try{
-  pending=await Promise.all(files.map(fileData));
-  document.getElementById('preview').innerHTML=pending.map(p=>`<img class="thumb" src="${p.data}">`).join('');
- }catch(err){
-  alert('有一張照片無法處理，請重新選擇。');
-  pending=[]; document.getElementById('preview').innerHTML=''; e.target.value='';
- }finally{
-  btn.childNodes[0].nodeValue=oldText;
- }
+  const created=Date.now(),dateOnly=$('dateOnly').checked,eventAt=stampFrom($('eventDate').value,$('eventTime').value,dateOnly);
+  await put({id:crypto.randomUUID(),created,updated:created,eventAt,dateOnly,text,photos:pending,starred:false});
+  $('text').value='';pending=[];renderPending();$('photos').value='';setNow();$('whenPanel').classList.add('hidden');await render();
+ }finally{$('save').disabled=false}
 };
 
-document.getElementById('save').onclick=async()=>{const text=document.querySelector('#text').value.trim();if(!text&&!pending.length)return;
-await put({id:crypto.randomUUID(),created:Date.now(),text,photos:pending});document.querySelector('#text').value='';pending=[];document.getElementById('preview').innerHTML='';document.getElementById('photos').value='';await render();};
-
 async function render(){
- const items=await all(), q=document.getElementById('search').value.trim().toLowerCase(); const f=items.filter(x=>!q||(x.text||'').toLowerCase().includes(q));
- let last=''; document.getElementById('timeline').innerHTML=f.map(x=>{const d=dt(x.created);const head=d!==last?`<div class="day"><h2>${d}</h2>`:'';const close=d!==last?(last=d,''):'';return `${head}<article class="entry"><div class="meta">${tm(x.created)}</div><p>${esc(x.text)}</p>${x.photos?.length?`<div class="photos">${x.photos.map(p=>`<img src="${p.data}" loading="lazy">`).join('')}</div>`:''}<div class="actions"><button class="ghost" onclick="removeEntry('${x.id}')">刪除</button></div></article>`}).join('')+(f.length?'':'<div class="empty">還沒有留下任何片段。</div>');
- document.getElementById('gallery').innerHTML=items.flatMap(x=>(x.photos||[]).map(p=>`<img src="${p.data}" title="${esc(x.text)}" loading="lazy">`)).join('')||'<div class="empty">照片會慢慢出現在這裡。</div>';
- const cutoff=Date.now()-30*864e5, recent=items.filter(x=>x.created>=cutoff); document.getElementById('count30').textContent=recent.length;
- document.getElementById('summaryText').textContent=recent.length?`你最近留下了 ${recent.length} 個片段。它們不必都是成果：旅行、疲倦、喜歡的東西、突然想到的一句話，都算你走過的痕跡。`:'最近還沒有紀錄。沒有關係，從一句話開始就好。';
+ const items=await all(),q=$('search').value.trim().toLowerCase(),f=items.filter(x=>!q||(x.text||'').toLowerCase().includes(q));
+ let last='';
+ $('timeline').innerHTML=f.map(x=>{const d=dayFmt(eventStamp(x));const head=d!==last?(last=d,`<div class="day"><h2>${d}</h2>`):'';const when=x.dateOnly?'日期補記':timeFmt(eventStamp(x));return `${head}<article class="entry ${x.starred?'starred':''}"><div class="meta">${when}${x.created!==x.eventAt?' · 補記':''}</div><p>${esc(x.text)}</p>${x.photos.length?`<div class="photos">${x.photos.map(p=>`<img src="${p.data}" loading="lazy">`).join('')}</div>`:''}<div class="actions"><button class="ghost starBtn" onclick="toggleStar('${x.id}')" aria-label="標記想記得">${x.starred?'★':'☆'}</button><button class="ghost" onclick="openEdit('${x.id}')">編輯</button></div></article>`}).join('')+(f.length?'':'<div class="empty">還沒有留下任何片段。</div>');
+ $('gallery').innerHTML=items.flatMap(x=>x.photos.map(p=>`<img src="${p.data}" title="${esc(x.text)}" loading="lazy">`)).join('')||'<div class="empty">照片會慢慢出現在這裡。</div>';
+ await renderSummary(items);renderBackupStats(items);
 }
-window.removeEntry=async id=>{if(confirm('刪除這一筆紀錄？')){await del(id);render()}};
-document.getElementById('search').oninput=render;
+window.toggleStar=async id=>{const items=await all(),x=items.find(v=>v.id===id);if(!x)return;x.starred=!x.starred;x.updated=Date.now();await put(x);render()};
 
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');['timeline','gallery','summary','backup'].forEach(v=>document.getElementById(v+'View').classList.toggle('hidden',v!==b.dataset.view));render()});
+window.openEdit=async id=>{
+ const items=await all();editing=items.find(x=>x.id===id);if(!editing)return;
+ $('editText').value=editing.text||'';$('editDate').value=ymd(eventStamp(editing));$('editTime').value=hm(eventStamp(editing));$('editDateOnly').checked=!!editing.dateOnly;$('editTime').disabled=!!editing.dateOnly;renderEditPreview();$('editBack').classList.remove('hidden')
+};
+function renderEditPreview(){$('editPreview').innerHTML=previewHTML(editing?.photos||[],true)}
+$('editPreview').onclick=e=>{const b=e.target.closest('.removePhoto');if(!b||!editing)return;editing.photos.splice(Number(b.dataset.i),1);renderEditPreview()};
+$('editPhotos').onchange=async e=>{if(!editing)return;await addFiles(e.target.files,editing.photos);renderEditPreview();e.target.value=''};
+$('editDateOnly').onchange=()=>{$('editTime').disabled=$('editDateOnly').checked};
+$('cancelEdit').onclick=()=>{editing=null;$('editBack').classList.add('hidden')};
+$('saveEdit').onclick=async()=>{if(!editing)return;const text=$('editText').value.trim();if(!text&&!editing.photos.length){alert('至少留下一句話或一張照片。');return}editing.text=text;editing.dateOnly=$('editDateOnly').checked;editing.eventAt=stampFrom($('editDate').value,$('editTime').value,editing.dateOnly);editing.updated=Date.now();await put(editing);editing=null;$('editBack').classList.add('hidden');render()};
+$('deleteEdit').onclick=async()=>{if(!editing)return;if(confirm('確定刪除這一筆紀錄？刪除後無法復原。')){await del(editing.id);editing=null;$('editBack').classList.add('hidden');render()}};
 
-async function recentText(){
- const items=await all(),cut=Date.now()-30*864e5;
- return items.filter(x=>x.created>=cut).reverse().map(x=>{
-  const pc=(x.photos||[]).length;
-  const photoLine=pc?`\n📷 ${pc} 張照片`:'';
-  return `[${new Date(x.created).toLocaleString('zh-TW')}]\n${x.text||'(照片紀錄)'}${photoLine}`;
- }).join('\n\n')
+$('search').oninput=render;
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');['timeline','gallery','summary','backup'].forEach(v=>$(v+'View').classList.toggle('hidden',v!==b.dataset.view));render()});
+
+function rangeStart(){
+ const n=new Date();
+ if(summaryRange==='7')return Date.now()-7*864e5;
+ if(summaryRange==='30')return Date.now()-30*864e5;
+ return new Date(n.getFullYear(),0,1).getTime()
 }
-document.getElementById('copyRecent').onclick=async()=>{await navigator.clipboard.writeText(await recentText());alert('已複製最近 30 天紀錄。')};
-document.getElementById('copyPrompt').onclick=async()=>{const body=await recentText();const prompt=`以下是我最近留下的原始生活紀錄。請保留我的語氣與真實感，不要把普通生活硬寫成勵志文，也不要捏造沒發生的事。請先整理主要事件與感受，再產出一版自然、可發表的文字；若素材不足，就保持短。\n\n${body}`;await navigator.clipboard.writeText(prompt);alert('已複製。貼到 ChatGPT 就可以請 GPT 幫你整理。')};
+function rangeLabel(){return summaryRange==='7'?'最近 7 天':summaryRange==='30'?'最近 30 天':'今年'}
+async function renderSummary(items){
+ const recent=items.filter(x=>eventStamp(x)>=rangeStart()),photos=recent.reduce((n,x)=>n+x.photos.length,0),stars=recent.filter(x=>x.starred).length;
+ $('summaryCount').textContent=recent.length;
+ $('summaryText').textContent=recent.length?`${rangeLabel()}，你留下了 ${recent.length} 個片段、${photos} 張照片${stars?`，其中 ${stars} 筆標成「我想記得」`:''}。這裡不判斷是不是成果，只把你做過、看見過、感受過的收在一起。`:`${rangeLabel()}還沒有紀錄。想到什麼時，再留下一點就好。`;
+ $('summaryList').innerHTML=recent.slice(0,6).map(x=>`<li>${ymd(eventStamp(x))}｜${esc((x.text||'(照片紀錄)').slice(0,42))}${x.photos.length?` · 📷${x.photos.length}`:''}</li>`).join('')
+}
+document.querySelectorAll('.rangeBtn').forEach(b=>b.onclick=()=>{summaryRange=b.dataset.range;document.querySelectorAll('.rangeBtn').forEach(x=>x.classList.toggle('active',x===b));render()});
 
-document.getElementById('export').onclick=async()=>{const items=await all();const blob=new Blob([JSON.stringify({app:'Still, I Am.',version:'0.3',exported:new Date().toISOString(),entries:items},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`still-i-am-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
-document.getElementById('import').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.entries))throw Error();for(const x of data.entries)await put(x);alert(`已匯入 ${data.entries.length} 筆。`);render()}catch{alert('這不是可用的 Still, I Am. 備份檔。')}e.target.value=''};
+async function selectedText(){
+ const items=await all(),recent=items.filter(x=>eventStamp(x)>=rangeStart()).sort((a,b)=>eventStamp(a)-eventStamp(b));
+ return recent.map(x=>`[${ymd(eventStamp(x))}${x.dateOnly?'':` ${timeFmt(eventStamp(x))}`}]\n${x.text||'(照片紀錄)'}${x.photos.length?`\n📷 ${x.photos.length} 張照片`:''}${x.starred?'\n⭐ 我想記得':''}`).join('\n\n')
+}
+async function copyText(t,msg){try{await navigator.clipboard.writeText(t);alert(msg)}catch{alert('無法自動複製，請稍後再試。')}}
+$('copyRecent').onclick=async()=>copyText(await selectedText(),`已複製${rangeLabel()}紀錄。`);
+$('copyPrompt').onclick=async()=>{const body=await selectedText();const prompt=`以下是我在 Still, I Am. 留下的${rangeLabel()}生活片段。請先依時間順序彙整「我做過的、我經歷的、我看到或喜歡的、我想到或感受到的」，不要把看到別人的作品誤寫成我的成果，也不要捏造照片內容。接著給我一份精簡摘要；如果我要求遊記，再保留我的語氣，把這些片段串成自然的旅行紀錄。普通生活不用硬寫成勵志文。\n\n${body}`;copyText(prompt,'已複製。貼到 ChatGPT 就可以整理。')};
+
+function approxBytes(items){return new Blob([JSON.stringify(items)]).size}
+function fmtBytes(n){if(n<1024)return `${n} B`;if(n<1048576)return `${(n/1024).toFixed(1)} KB`;return `${(n/1048576).toFixed(1)} MB`}
+function renderBackupStats(items){const pc=items.reduce((n,x)=>n+x.photos.length,0);$('backupStats').textContent=`目前 ${items.length} 筆紀錄 · ${pc} 張照片 · 備份資料約 ${fmtBytes(approxBytes(items))}`}
+$('export').onclick=async()=>{const items=await all(),blob=new Blob([JSON.stringify({app:'Still, I Am.',version:APP_VERSION,exported:new Date().toISOString(),entries:items},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`still-i-am-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('import').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.entries))throw Error();for(const raw of data.entries)await put(normalize(raw));alert(`已匯入 ${data.entries.length} 筆。`);render()}catch{alert('這不是可用的 Still, I Am. 備份檔。')}e.target.value=''};
 
 openDB().then(render).catch(()=>alert('瀏覽器無法開啟本機資料庫。請確認不是使用私密瀏覽模式。'));
 </script>
