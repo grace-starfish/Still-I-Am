@@ -84,11 +84,11 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 <button id="export">匯出備份 JSON</button>
 <label class="filebtn">匯入備份<input id="import" type="file" accept=".json,application/json" hidden></label>
 </div>
-<p class="hint">備份會包含文字與照片；照片多時檔案會變大。</p>
+<p class="hint">備份會包含文字與日記用壓縮照片；iPhone 相簿仍保留原始照片。</p>
 </div>
 </div>
 
-<footer>Still, I Am. · V0.2.1 · Tokyo travel build</footer>
+<footer>Still, I Am. · V0.3 · Tokyo Build</footer>
 </div>
 
 <script>
@@ -101,9 +101,46 @@ function del(id){return new Promise((res,rej)=>{const r=tx('readwrite').delete(i
 const esc=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const dt=t=>new Intl.DateTimeFormat('zh-TW',{month:'long',day:'numeric',weekday:'short'}).format(new Date(t));
 const tm=t=>new Intl.DateTimeFormat('zh-TW',{hour:'2-digit',minute:'2-digit'}).format(new Date(t));
-function fileData(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res({name:f.name,type:f.type,data:r.result});r.onerror=rej;r.readAsDataURL(f)})}
+function fileData(f){
+ return new Promise((res,rej)=>{
+  const reader=new FileReader();
+  reader.onerror=()=>rej(reader.error);
+  reader.onload=()=>{
+   const img=new Image();
+   img.onerror=()=>rej(new Error('照片讀取失敗'));
+   img.onload=()=>{
+    const MAX=1600;
+    let w=img.naturalWidth,h=img.naturalHeight;
+    const scale=Math.min(1,MAX/Math.max(w,h));
+    w=Math.max(1,Math.round(w*scale)); h=Math.max(1,Math.round(h*scale));
+    const c=document.createElement('canvas'); c.width=w; c.height=h;
+    const ctx=c.getContext('2d');
+    ctx.drawImage(img,0,0,w,h);
+    const data=c.toDataURL('image/jpeg',0.76);
+    res({name:(f.name||'photo').replace(/\.[^.]+$/,'.jpg'),type:'image/jpeg',data,width:w,height:h,optimized:true});
+   };
+   img.src=reader.result;
+  };
+  reader.readAsDataURL(f);
+ });
+}
 
-document.getElementById('photos').onchange=async e=>{pending=await Promise.all([...e.target.files].slice(0,8).map(fileData));document.getElementById('preview').innerHTML=pending.map(p=>`<img class="thumb" src="${p.data}">`).join('')};
+document.getElementById('photos').onchange=async e=>{
+ const files=[...e.target.files].slice(0,8);
+ if(!files.length)return;
+ const btn=document.querySelector('label.filebtn');
+ const oldText=btn.childNodes[0].nodeValue;
+ btn.childNodes[0].nodeValue='⏳ 處理照片中 ';
+ try{
+  pending=await Promise.all(files.map(fileData));
+  document.getElementById('preview').innerHTML=pending.map(p=>`<img class="thumb" src="${p.data}">`).join('');
+ }catch(err){
+  alert('有一張照片無法處理，請重新選擇。');
+  pending=[]; document.getElementById('preview').innerHTML=''; e.target.value='';
+ }finally{
+  btn.childNodes[0].nodeValue=oldText;
+ }
+};
 
 document.getElementById('save').onclick=async()=>{const text=document.querySelector('#text').value.trim();if(!text&&!pending.length)return;
 await put({id:crypto.randomUUID(),created:Date.now(),text,photos:pending});document.querySelector('#text').value='';pending=[];document.getElementById('preview').innerHTML='';document.getElementById('photos').value='';await render();};
@@ -120,11 +157,18 @@ document.getElementById('search').oninput=render;
 
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');['timeline','gallery','summary','backup'].forEach(v=>document.getElementById(v+'View').classList.toggle('hidden',v!==b.dataset.view));render()});
 
-async function recentText(){const items=await all(),cut=Date.now()-30*864e5;return items.filter(x=>x.created>=cut).reverse().map(x=>`[${new Date(x.created).toLocaleString('zh-TW')}]\n${x.text||'(照片紀錄)'}`).join('\n\n')}
+async function recentText(){
+ const items=await all(),cut=Date.now()-30*864e5;
+ return items.filter(x=>x.created>=cut).reverse().map(x=>{
+  const pc=(x.photos||[]).length;
+  const photoLine=pc?`\n📷 ${pc} 張照片`:'';
+  return `[${new Date(x.created).toLocaleString('zh-TW')}]\n${x.text||'(照片紀錄)'}${photoLine}`;
+ }).join('\n\n')
+}
 document.getElementById('copyRecent').onclick=async()=>{await navigator.clipboard.writeText(await recentText());alert('已複製最近 30 天紀錄。')};
 document.getElementById('copyPrompt').onclick=async()=>{const body=await recentText();const prompt=`以下是我最近留下的原始生活紀錄。請保留我的語氣與真實感，不要把普通生活硬寫成勵志文，也不要捏造沒發生的事。請先整理主要事件與感受，再產出一版自然、可發表的文字；若素材不足，就保持短。\n\n${body}`;await navigator.clipboard.writeText(prompt);alert('已複製。貼到 ChatGPT 就可以請 GPT 幫你整理。')};
 
-document.getElementById('export').onclick=async()=>{const items=await all();const blob=new Blob([JSON.stringify({app:'Still, I Am.',version:'0.2.1',exported:new Date().toISOString(),entries:items},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`still-i-am-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+document.getElementById('export').onclick=async()=>{const items=await all();const blob=new Blob([JSON.stringify({app:'Still, I Am.',version:'0.3',exported:new Date().toISOString(),entries:items},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`still-i-am-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 document.getElementById('import').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.entries))throw Error();for(const x of data.entries)await put(x);alert(`已匯入 ${data.entries.length} 筆。`);render()}catch{alert('這不是可用的 Still, I Am. 備份檔。')}e.target.value=''};
 
 openDB().then(render).catch(()=>alert('瀏覽器無法開啟本機資料庫。請確認不是使用私密瀏覽模式。'));
