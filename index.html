@@ -88,7 +88,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 </div>
 </div>
 
-<footer>Still, I Am. · local-first travel build</footer>
+<footer>Still, I Am. · V0.2.1 · Tokyo travel build</footer>
 </div>
 
 <script>
@@ -103,29 +103,29 @@ const dt=t=>new Intl.DateTimeFormat('zh-TW',{month:'long',day:'numeric',weekday:
 const tm=t=>new Intl.DateTimeFormat('zh-TW',{hour:'2-digit',minute:'2-digit'}).format(new Date(t));
 function fileData(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res({name:f.name,type:f.type,data:r.result});r.onerror=rej;r.readAsDataURL(f)})}
 
-photos.onchange=async e=>{pending=await Promise.all([...e.target.files].slice(0,8).map(fileData));preview.innerHTML=pending.map(p=>`<img class="thumb" src="${p.data}">`).join('')};
+document.getElementById('photos').onchange=async e=>{pending=await Promise.all([...e.target.files].slice(0,8).map(fileData));document.getElementById('preview').innerHTML=pending.map(p=>`<img class="thumb" src="${p.data}">`).join('')};
 
-save.onclick=async()=>{const text=document.querySelector('#text').value.trim();if(!text&&!pending.length)return;
-await put({id:crypto.randomUUID(),created:Date.now(),text,photos:pending});document.querySelector('#text').value='';pending=[];preview.innerHTML='';photos.value='';await render();};
+document.getElementById('save').onclick=async()=>{const text=document.querySelector('#text').value.trim();if(!text&&!pending.length)return;
+await put({id:crypto.randomUUID(),created:Date.now(),text,photos:pending});document.querySelector('#text').value='';pending=[];document.getElementById('preview').innerHTML='';document.getElementById('photos').value='';await render();};
 
 async function render(){
- const items=await all(), q=search.value.trim().toLowerCase(); const f=items.filter(x=>!q||(x.text||'').toLowerCase().includes(q));
- let last=''; timeline.innerHTML=f.map(x=>{const d=dt(x.created);const head=d!==last?`<div class="day"><h2>${d}</h2>`:'';const close=d!==last?(last=d,''):'';return `${head}<article class="entry"><div class="meta">${tm(x.created)}</div><p>${esc(x.text)}</p>${x.photos?.length?`<div class="photos">${x.photos.map(p=>`<img src="${p.data}" loading="lazy">`).join('')}</div>`:''}<div class="actions"><button class="ghost" onclick="removeEntry('${x.id}')">刪除</button></div></article>`}).join('')+(f.length?'':'<div class="empty">還沒有留下任何片段。</div>');
- gallery.innerHTML=items.flatMap(x=>(x.photos||[]).map(p=>`<img src="${p.data}" title="${esc(x.text)}" loading="lazy">`)).join('')||'<div class="empty">照片會慢慢出現在這裡。</div>';
- const cutoff=Date.now()-30*864e5, recent=items.filter(x=>x.created>=cutoff); count30.textContent=recent.length;
- summaryText.textContent=recent.length?`你最近留下了 ${recent.length} 個片段。它們不必都是成果：旅行、疲倦、喜歡的東西、突然想到的一句話，都算你走過的痕跡。`:'最近還沒有紀錄。沒有關係，從一句話開始就好。';
+ const items=await all(), q=document.getElementById('search').value.trim().toLowerCase(); const f=items.filter(x=>!q||(x.text||'').toLowerCase().includes(q));
+ let last=''; document.getElementById('timeline').innerHTML=f.map(x=>{const d=dt(x.created);const head=d!==last?`<div class="day"><h2>${d}</h2>`:'';const close=d!==last?(last=d,''):'';return `${head}<article class="entry"><div class="meta">${tm(x.created)}</div><p>${esc(x.text)}</p>${x.photos?.length?`<div class="photos">${x.photos.map(p=>`<img src="${p.data}" loading="lazy">`).join('')}</div>`:''}<div class="actions"><button class="ghost" onclick="removeEntry('${x.id}')">刪除</button></div></article>`}).join('')+(f.length?'':'<div class="empty">還沒有留下任何片段。</div>');
+ document.getElementById('gallery').innerHTML=items.flatMap(x=>(x.photos||[]).map(p=>`<img src="${p.data}" title="${esc(x.text)}" loading="lazy">`)).join('')||'<div class="empty">照片會慢慢出現在這裡。</div>';
+ const cutoff=Date.now()-30*864e5, recent=items.filter(x=>x.created>=cutoff); document.getElementById('count30').textContent=recent.length;
+ document.getElementById('summaryText').textContent=recent.length?`你最近留下了 ${recent.length} 個片段。它們不必都是成果：旅行、疲倦、喜歡的東西、突然想到的一句話，都算你走過的痕跡。`:'最近還沒有紀錄。沒有關係，從一句話開始就好。';
 }
 window.removeEntry=async id=>{if(confirm('刪除這一筆紀錄？')){await del(id);render()}};
-search.oninput=render;
+document.getElementById('search').oninput=render;
 
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');['timeline','gallery','summary','backup'].forEach(v=>document.getElementById(v+'View').classList.toggle('hidden',v!==b.dataset.view));render()});
 
 async function recentText(){const items=await all(),cut=Date.now()-30*864e5;return items.filter(x=>x.created>=cut).reverse().map(x=>`[${new Date(x.created).toLocaleString('zh-TW')}]\n${x.text||'(照片紀錄)'}`).join('\n\n')}
-copyRecent.onclick=async()=>{await navigator.clipboard.writeText(await recentText());alert('已複製最近 30 天紀錄。')};
-copyPrompt.onclick=async()=>{const body=await recentText();const prompt=`以下是我最近留下的原始生活紀錄。請保留我的語氣與真實感，不要把普通生活硬寫成勵志文，也不要捏造沒發生的事。請先整理主要事件與感受，再產出一版自然、可發表的文字；若素材不足，就保持短。\n\n${body}`;await navigator.clipboard.writeText(prompt);alert('已複製。貼到 ChatGPT 就可以請 GPT 幫你整理。')};
+document.getElementById('copyRecent').onclick=async()=>{await navigator.clipboard.writeText(await recentText());alert('已複製最近 30 天紀錄。')};
+document.getElementById('copyPrompt').onclick=async()=>{const body=await recentText();const prompt=`以下是我最近留下的原始生活紀錄。請保留我的語氣與真實感，不要把普通生活硬寫成勵志文，也不要捏造沒發生的事。請先整理主要事件與感受，再產出一版自然、可發表的文字；若素材不足，就保持短。\n\n${body}`;await navigator.clipboard.writeText(prompt);alert('已複製。貼到 ChatGPT 就可以請 GPT 幫你整理。')};
 
-export.onclick=async()=>{const items=await all();const blob=new Blob([JSON.stringify({app:'Still, I Am.',version:'0.2',exported:new Date().toISOString(),entries:items},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`still-i-am-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
-import.onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.entries))throw Error();for(const x of data.entries)await put(x);alert(`已匯入 ${data.entries.length} 筆。`);render()}catch{alert('這不是可用的 Still, I Am. 備份檔。')}e.target.value=''};
+document.getElementById('export').onclick=async()=>{const items=await all();const blob=new Blob([JSON.stringify({app:'Still, I Am.',version:'0.2.1',exported:new Date().toISOString(),entries:items},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`still-i-am-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+document.getElementById('import').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.entries))throw Error();for(const x of data.entries)await put(x);alert(`已匯入 ${data.entries.length} 筆。`);render()}catch{alert('這不是可用的 Still, I Am. 備份檔。')}e.target.value=''};
 
 openDB().then(render).catch(()=>alert('瀏覽器無法開啟本機資料庫。請確認不是使用私密瀏覽模式。'));
 </script>
