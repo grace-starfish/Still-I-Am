@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f3ed">
+<title>Still, I Am.｜我還在這裡</title>
+<style>
+:root{
+  --bg:#f7f3ed;--paper:#fffdf9;--ink:#292722;--muted:#7d786f;
+  --line:#e7e0d6;--accent:#6f7567;--accent2:#b69a7c;--danger:#9b5757;
+}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
+.wrap{max-width:760px;margin:auto;padding:22px 16px 90px}
+header{padding:10px 2px 18px} h1{font-family:Georgia,serif;font-weight:500;font-size:34px;margin:0}
+.sub{color:var(--muted);margin-top:5px}.card{background:var(--paper);border:1px solid var(--line);
+border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 4px 18px rgba(50,40,30,.035)}
+textarea{width:100%;min-height:110px;border:0;resize:vertical;background:transparent;color:var(--ink);
+font:inherit;font-size:17px;line-height:1.6;outline:none}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}
+button,.filebtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;
+font:inherit;color:var(--ink);cursor:pointer}.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.small{font-size:14px;padding:8px 11px}.hint,.meta{color:var(--muted);font-size:13px}
+#preview{display:flex;gap:8px;overflow:auto;margin:10px 0}.thumb{width:72px;height:72px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+nav{display:flex;gap:7px;overflow:auto;padding:4px 0 8px}.tab.active{background:var(--ink);color:#fff}
+.day{margin-top:22px}.day h2{font-size:15px;color:var(--muted);font-weight:600;margin:0 0 8px}
+.entry{background:var(--paper);border-left:3px solid var(--accent2);padding:13px 14px;margin:8px 0;border-radius:4px 14px 14px 4px}
+.entry p{white-space:pre-wrap;line-height:1.65;margin:7px 0}.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.photos img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}
+.actions{display:flex;gap:6px;justify-content:flex-end}.ghost{border:0;background:transparent;color:var(--muted);padding:5px 7px}
+.search{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:11px 14px;font:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}
+.empty{text-align:center;color:var(--muted);padding:42px 10px}
+.summary{line-height:1.7}.stat{font-size:28px;font-family:Georgia,serif}
+footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
+.hidden{display:none!important}
+@media(max-width:520px){h1{font-size:30px}.wrap{padding-top:12px}.photos,.gallery{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Still, I Am.</h1><div class="sub">我還在這裡 · 只管留下，不要求完整。</div></header>
+
+<section class="card">
+<textarea id="text" placeholder="今天發生了什麼？一句話也可以。"></textarea>
+<div id="preview"></div>
+<div class="row">
+<label class="filebtn small">📷 加照片<input id="photos" type="file" accept="image/*" multiple hidden></label>
+<span class="hint grow">也可以直接用 iPhone 鍵盤的麥克風口述。</span>
+<button id="save" class="primary">留下</button>
+</div>
+</section>
+
+<nav>
+<button class="tab active" data-view="timeline">時間軸</button>
+<button class="tab" data-view="gallery">照片牆</button>
+<button class="tab" data-view="summary">最近的我</button>
+<button class="tab" data-view="backup">備份</button>
+</nav>
+
+<div id="timelineView">
+<input id="search" class="search" placeholder="搜尋某個人、地方、JOJO、東京……">
+<div id="timeline"></div>
+</div>
+
+<div id="galleryView" class="hidden"><div id="gallery" class="gallery"></div></div>
+
+<div id="summaryView" class="hidden">
+<div class="card summary">
+<div class="meta">最近 30 天</div>
+<div><span id="count30" class="stat">0</span> 筆留下來的片段</div>
+<p id="summaryText"></p>
+<button id="copyRecent">複製最近紀錄</button>
+<button id="copyPrompt">✨ 複製給 GPT 整理</button>
+</div>
+</div>
+
+<div id="backupView" class="hidden">
+<div class="card">
+<h3>把生活帶走</h3>
+<p class="hint">資料目前只存在這台裝置的瀏覽器。出發旅行前、旅行途中，建議定期匯出備份。</p>
+<div class="row">
+<button id="export">匯出備份 JSON</button>
+<label class="filebtn">匯入備份<input id="import" type="file" accept=".json,application/json" hidden></label>
+</div>
+<p class="hint">備份會包含文字與照片；照片多時檔案會變大。</p>
+</div>
+</div>
+
+<footer>Still, I Am. · local-first travel build</footer>
+</div>
+
+<script>
+const DB='still_i_am_db', STORE='entries'; let db, pending=[];
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=e=>e.target.result.createObjectStore(STORE,{keyPath:'id'});r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=()=>rej(r.error)})}
+function tx(mode='readonly'){return db.transaction(STORE,mode).objectStore(STORE)}
+function all(){return new Promise((res,rej)=>{const r=tx().getAll();r.onsuccess=()=>res(r.result.sort((a,b)=>b.created-a.created));r.onerror=()=>rej(r.error)})}
+function put(x){return new Promise((res,rej)=>{const r=tx('readwrite').put(x);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function del(id){return new Promise((res,rej)=>{const r=tx('readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+const esc=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const dt=t=>new Intl.DateTimeFormat('zh-TW',{month:'long',day:'numeric',weekday:'short'}).format(new Date(t));
+const tm=t=>new Intl.DateTimeFormat('zh-TW',{hour:'2-digit',minute:'2-digit'}).format(new Date(t));
+function fileData(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res({name:f.name,type:f.type,data:r.result});r.onerror=rej;r.readAsDataURL(f)})}
+
+photos.onchange=async e=>{pending=await Promise.all([...e.target.files].slice(0,8).map(fileData));preview.innerHTML=pending.map(p=>`<img class="thumb" src="${p.data}">`).join('')};
+
+save.onclick=async()=>{const text=document.querySelector('#text').value.trim();if(!text&&!pending.length)return;
+await put({id:crypto.randomUUID(),created:Date.now(),text,photos:pending});document.querySelector('#text').value='';pending=[];preview.innerHTML='';photos.value='';await render();};
+
+async function render(){
+ const items=await all(), q=search.value.trim().toLowerCase(); const f=items.filter(x=>!q||(x.text||'').toLowerCase().includes(q));
+ let last=''; timeline.innerHTML=f.map(x=>{const d=dt(x.created);const head=d!==last?`<div class="day"><h2>${d}</h2>`:'';const close=d!==last?(last=d,''):'';return `${head}<article class="entry"><div class="meta">${tm(x.created)}</div><p>${esc(x.text)}</p>${x.photos?.length?`<div class="photos">${x.photos.map(p=>`<img src="${p.data}" loading="lazy">`).join('')}</div>`:''}<div class="actions"><button class="ghost" onclick="removeEntry('${x.id}')">刪除</button></div></article>`}).join('')+(f.length?'':'<div class="empty">還沒有留下任何片段。</div>');
+ gallery.innerHTML=items.flatMap(x=>(x.photos||[]).map(p=>`<img src="${p.data}" title="${esc(x.text)}" loading="lazy">`)).join('')||'<div class="empty">照片會慢慢出現在這裡。</div>';
+ const cutoff=Date.now()-30*864e5, recent=items.filter(x=>x.created>=cutoff); count30.textContent=recent.length;
+ summaryText.textContent=recent.length?`你最近留下了 ${recent.length} 個片段。它們不必都是成果：旅行、疲倦、喜歡的東西、突然想到的一句話，都算你走過的痕跡。`:'最近還沒有紀錄。沒有關係，從一句話開始就好。';
+}
+window.removeEntry=async id=>{if(confirm('刪除這一筆紀錄？')){await del(id);render()}};
+search.oninput=render;
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');['timeline','gallery','summary','backup'].forEach(v=>document.getElementById(v+'View').classList.toggle('hidden',v!==b.dataset.view));render()});
+
+async function recentText(){const items=await all(),cut=Date.now()-30*864e5;return items.filter(x=>x.created>=cut).reverse().map(x=>`[${new Date(x.created).toLocaleString('zh-TW')}]\n${x.text||'(照片紀錄)'}`).join('\n\n')}
+copyRecent.onclick=async()=>{await navigator.clipboard.writeText(await recentText());alert('已複製最近 30 天紀錄。')};
+copyPrompt.onclick=async()=>{const body=await recentText();const prompt=`以下是我最近留下的原始生活紀錄。請保留我的語氣與真實感，不要把普通生活硬寫成勵志文，也不要捏造沒發生的事。請先整理主要事件與感受，再產出一版自然、可發表的文字；若素材不足，就保持短。\n\n${body}`;await navigator.clipboard.writeText(prompt);alert('已複製。貼到 ChatGPT 就可以請 GPT 幫你整理。')};
+
+export.onclick=async()=>{const items=await all();const blob=new Blob([JSON.stringify({app:'Still, I Am.',version:'0.2',exported:new Date().toISOString(),entries:items},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`still-i-am-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+import.onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.entries))throw Error();for(const x of data.entries)await put(x);alert(`已匯入 ${data.entries.length} 筆。`);render()}catch{alert('這不是可用的 Still, I Am. 備份檔。')}e.target.value=''};
+
+openDB().then(render).catch(()=>alert('瀏覽器無法開啟本機資料庫。請確認不是使用私密瀏覽模式。'));
+</script>
+</body>
+</html>
