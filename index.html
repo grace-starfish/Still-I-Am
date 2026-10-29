@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f7f3ed">
 <title>Still, I Am.｜我還在這裡</title>
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
 <style>
 :root{--bg:#f7f3ed;--paper:#fffdf9;--ink:#292722;--muted:#7d786f;--line:#e7e0d6;--accent:#6f7567;--accent2:#b69a7c;--danger:#9b5757}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
@@ -23,7 +25,7 @@ nav{display:flex;gap:7px;overflow:auto;padding:4px 0 8px}.tab.active{background:
 .day{margin-top:22px}.day h2{font-size:15px;color:var(--muted);font-weight:600;margin:0 0 8px}
 .entry{background:var(--paper);border-left:3px solid var(--accent2);padding:13px 14px;margin:8px 0;border-radius:4px 14px 14px 4px}.entry.starred{border-left-color:#8a754e}
 .entry p{white-space:pre-wrap;line-height:1.65;margin:7px 0}.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.photos img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}
-.actions{display:flex;gap:4px;justify-content:flex-end;align-items:center}.ghost{border:0;background:transparent;color:var(--muted);padding:7px 8px}.starBtn{font-size:19px}
+.actions{display:flex;gap:4px;justify-content:flex-end;align-items:center}.ghost{border:0;background:transparent;color:var(--muted);padding:7px 8px}.markBtn{font-size:19px;min-width:38px}.markBtn.active{color:var(--ink)}
 .search{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:11px 14px;font:inherit;font-size:16px}
 .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}.empty{text-align:center;color:var(--muted);padding:42px 10px}
 .summary{line-height:1.7}.stat{font-size:28px;font-family:Georgia,serif}.rangeBtns{display:flex;gap:6px;margin:10px 0 14px}.rangeBtn.active{background:var(--ink);color:#fff}.summaryList{margin:12px 0;padding-left:20px}.summaryList li{margin:6px 0}
@@ -84,7 +86,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}.hidd
 </div>
 </div>
 
-<footer>Still, I Am. · V0.3.1 · Tokyo Build</footer>
+<footer>Still, I Am. · V0.3.2 · Tokyo Polish</footer>
 </div>
 
 <div id="editBack" class="modalBack hidden" role="dialog" aria-modal="true" aria-label="編輯紀錄">
@@ -100,7 +102,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}.hidd
 </div>
 
 <script>
-const APP_VERSION='0.3.1';
+const APP_VERSION='0.3.2';
 const DB='still_i_am_db', STORE='entries'; let db, pending=[], editing=null, summaryRange='30';
 const $=id=>document.getElementById(id);
 function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains(STORE))e.target.result.createObjectStore(STORE,{keyPath:'id'})};r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=()=>rej(r.error)})}
@@ -108,11 +110,11 @@ function tx(mode='readonly'){return db.transaction(STORE,mode).objectStore(STORE
 function all(){return new Promise((res,rej)=>{const r=tx().getAll();r.onsuccess=()=>res(r.result.map(normalize).sort((a,b)=>eventStamp(b)-eventStamp(a)));r.onerror=()=>rej(r.error)})}
 function put(x){return new Promise((res,rej)=>{const r=tx('readwrite').put(x);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
 function del(id){return new Promise((res,rej)=>{const r=tx('readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
-function normalize(x){if(!x.created)x.created=Date.now();if(!x.eventAt)x.eventAt=x.created;if(typeof x.dateOnly!=='boolean')x.dateOnly=false;if(!Array.isArray(x.photos))x.photos=[];return x}
+function normalize(x){if(!x.created)x.created=Date.now();if(!x.eventAt)x.eventAt=x.created;if(typeof x.dateOnly!=='boolean')x.dateOnly=false;if(!Array.isArray(x.photos))x.photos=[];if(typeof x.liked!=='boolean')x.liked=false;if(typeof x.starred!=='boolean')x.starred=false;if(typeof x.backfilled!=='boolean')x.backfilled=!!x.dateOnly||Math.abs(x.created-x.eventAt)>120000;return x}
 function eventStamp(x){return x.eventAt||x.created}
 const esc=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const dayFmt=t=>new Intl.DateTimeFormat('zh-TW',{month:'long',day:'numeric',weekday:'short'}).format(new Date(t));
-const timeFmt=t=>new Intl.DateTimeFormat('zh-TW',{hour:'2-digit',minute:'2-digit'}).format(new Date(t));
+const timeFmt=t=>new Intl.DateTimeFormat('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false,hourCycle:'h23'}).format(new Date(t));
 const ymd=d=>{const z=new Date(d);return `${z.getFullYear()}-${String(z.getMonth()+1).padStart(2,'0')}-${String(z.getDate()).padStart(2,'0')}`};
 const hm=d=>{const z=new Date(d);return `${String(z.getHours()).padStart(2,'0')}:${String(z.getMinutes()).padStart(2,'0')}`};
 function stampFrom(date,time,dateOnly){const parts=date.split('-').map(Number);if(parts.length!==3)return Date.now();if(dateOnly||!time)return new Date(parts[0],parts[1]-1,parts[2],12,0,0,0).getTime();const tt=time.split(':').map(Number);return new Date(parts[0],parts[1]-1,parts[2],tt[0]||0,tt[1]||0,0,0).getTime()}
@@ -142,11 +144,12 @@ async function addFiles(files,target){
 }
 $('photos').onchange=async e=>{await addFiles(e.target.files,pending);renderPending();e.target.value=''};
 
-function setNow(){const n=new Date();$('eventDate').value=ymd(n);$('eventTime').value=hm(n);$('dateOnly').checked=false;$('eventTime').disabled=false;$('whenText').textContent='🕒 現在'}
+let whenModified=false;
+function setNow(){const n=new Date();$('eventDate').value=ymd(n);$('eventTime').value=hm(n);$('dateOnly').checked=false;$('eventTime').disabled=false;$('whenText').textContent='🕒 現在';whenModified=false}
 setNow();
 $('changeWhen').onclick=()=>{$('whenPanel').classList.toggle('hidden')};
-$('dateOnly').onchange=()=>{$('eventTime').disabled=$('dateOnly').checked;updateWhenLabel()};
-$('eventDate').onchange=updateWhenLabel;$('eventTime').onchange=updateWhenLabel;
+$('dateOnly').onchange=()=>{whenModified=true;$('eventTime').disabled=$('dateOnly').checked;updateWhenLabel()};
+$('eventDate').onchange=()=>{whenModified=true;updateWhenLabel()};$('eventTime').onchange=()=>{whenModified=true;updateWhenLabel()};
 $('resetWhen').onclick=()=>{setNow();$('whenPanel').classList.add('hidden')};
 function updateWhenLabel(){const d=$('eventDate').value;if(!d)return;$('whenText').textContent=$('dateOnly').checked?`📅 ${d}`:`🕒 ${d} ${$('eventTime').value||''}`}
 
@@ -154,8 +157,8 @@ $('save').onclick=async()=>{
  const text=$('text').value.trim();if(!text&&!pending.length)return;
  $('save').disabled=true;
  try{
-  const created=Date.now(),dateOnly=$('dateOnly').checked,eventAt=stampFrom($('eventDate').value,$('eventTime').value,dateOnly);
-  await put({id:crypto.randomUUID(),created,updated:created,eventAt,dateOnly,text,photos:pending,starred:false});
+  const created=Date.now(),dateOnly=$('dateOnly').checked,eventAt=whenModified?stampFrom($('eventDate').value,$('eventTime').value,dateOnly):created;
+  await put({id:crypto.randomUUID(),created,updated:created,eventAt,dateOnly,backfilled:dateOnly||whenModified,text,photos:pending,starred:false,liked:false});
   $('text').value='';pending=[];renderPending();$('photos').value='';setNow();$('whenPanel').classList.add('hidden');await render();
  }finally{$('save').disabled=false}
 };
@@ -163,10 +166,11 @@ $('save').onclick=async()=>{
 async function render(){
  const items=await all(),q=$('search').value.trim().toLowerCase(),f=items.filter(x=>!q||(x.text||'').toLowerCase().includes(q));
  let last='';
- $('timeline').innerHTML=f.map(x=>{const d=dayFmt(eventStamp(x));const head=d!==last?(last=d,`<div class="day"><h2>${d}</h2>`):'';const when=x.dateOnly?'日期補記':timeFmt(eventStamp(x));return `${head}<article class="entry ${x.starred?'starred':''}"><div class="meta">${when}${x.created!==x.eventAt?' · 補記':''}</div><p>${esc(x.text)}</p>${x.photos.length?`<div class="photos">${x.photos.map(p=>`<img src="${p.data}" loading="lazy">`).join('')}</div>`:''}<div class="actions"><button class="ghost starBtn" onclick="toggleStar('${x.id}')" aria-label="標記想記得">${x.starred?'★':'☆'}</button><button class="ghost" onclick="openEdit('${x.id}')">編輯</button></div></article>`}).join('')+(f.length?'':'<div class="empty">還沒有留下任何片段。</div>');
+ $('timeline').innerHTML=f.map(x=>{const d=dayFmt(eventStamp(x));const head=d!==last?(last=d,`<div class="day"><h2>${d}</h2>`):'';const when=x.dateOnly?'日期補記':timeFmt(eventStamp(x));const backfill=!x.dateOnly&&x.backfilled?' · 補記':'';return `${head}<article class="entry ${x.starred?'starred':''}"><div class="meta">${when}${backfill}</div><p>${esc(x.text)}</p>${x.photos.length?`<div class="photos">${x.photos.map(p=>`<img src="${p.data}" loading="lazy">`).join('')}</div>`:''}<div class="actions"><button class="ghost markBtn ${x.liked?'active':''}" onclick="toggleLike('${x.id}')" aria-label="${x.liked?'取消喜歡':'標記喜歡'}" title="喜歡">${x.liked?'♥':'♡'}</button><button class="ghost markBtn ${x.starred?'active':''}" onclick="toggleStar('${x.id}')" aria-label="${x.starred?'取消節點':'標記節點'}" title="節點">${x.starred?'★':'☆'}</button><button class="ghost" onclick="openEdit('${x.id}')">編輯</button></div></article>`}).join('')+(f.length?'':'<div class="empty">還沒有留下任何片段。</div>');
  $('gallery').innerHTML=items.flatMap(x=>x.photos.map(p=>`<img src="${p.data}" title="${esc(x.text)}" loading="lazy">`)).join('')||'<div class="empty">照片會慢慢出現在這裡。</div>';
  await renderSummary(items);renderBackupStats(items);
 }
+window.toggleLike=async id=>{const items=await all(),x=items.find(v=>v.id===id);if(!x)return;x.liked=!x.liked;x.updated=Date.now();await put(x);render()};
 window.toggleStar=async id=>{const items=await all(),x=items.find(v=>v.id===id);if(!x)return;x.starred=!x.starred;x.updated=Date.now();await put(x);render()};
 
 window.openEdit=async id=>{
@@ -178,7 +182,7 @@ $('editPreview').onclick=e=>{const b=e.target.closest('.removePhoto');if(!b||!ed
 $('editPhotos').onchange=async e=>{if(!editing)return;await addFiles(e.target.files,editing.photos);renderEditPreview();e.target.value=''};
 $('editDateOnly').onchange=()=>{$('editTime').disabled=$('editDateOnly').checked};
 $('cancelEdit').onclick=()=>{editing=null;$('editBack').classList.add('hidden')};
-$('saveEdit').onclick=async()=>{if(!editing)return;const text=$('editText').value.trim();if(!text&&!editing.photos.length){alert('至少留下一句話或一張照片。');return}editing.text=text;editing.dateOnly=$('editDateOnly').checked;editing.eventAt=stampFrom($('editDate').value,$('editTime').value,editing.dateOnly);editing.updated=Date.now();await put(editing);editing=null;$('editBack').classList.add('hidden');render()};
+$('saveEdit').onclick=async()=>{if(!editing)return;const text=$('editText').value.trim();if(!text&&!editing.photos.length){alert('至少留下一句話或一張照片。');return}editing.text=text;editing.dateOnly=$('editDateOnly').checked;editing.eventAt=stampFrom($('editDate').value,$('editTime').value,editing.dateOnly);editing.backfilled=editing.dateOnly||Math.abs(editing.created-editing.eventAt)>120000;editing.updated=Date.now();await put(editing);editing=null;$('editBack').classList.add('hidden');render()};
 $('deleteEdit').onclick=async()=>{if(!editing)return;if(confirm('確定刪除這一筆紀錄？刪除後無法復原。')){await del(editing.id);editing=null;$('editBack').classList.add('hidden');render()}};
 
 $('search').oninput=render;
@@ -192,16 +196,16 @@ function rangeStart(){
 }
 function rangeLabel(){return summaryRange==='7'?'最近 7 天':summaryRange==='30'?'最近 30 天':'今年'}
 async function renderSummary(items){
- const recent=items.filter(x=>eventStamp(x)>=rangeStart()),photos=recent.reduce((n,x)=>n+x.photos.length,0),stars=recent.filter(x=>x.starred).length;
+ const recent=items.filter(x=>eventStamp(x)>=rangeStart()),photos=recent.reduce((n,x)=>n+x.photos.length,0),stars=recent.filter(x=>x.starred).length,likes=recent.filter(x=>x.liked).length;
  $('summaryCount').textContent=recent.length;
- $('summaryText').textContent=recent.length?`${rangeLabel()}，你留下了 ${recent.length} 個片段、${photos} 張照片${stars?`，其中 ${stars} 筆標成「我想記得」`:''}。這裡不判斷是不是成果，只把你做過、看見過、感受過的收在一起。`:`${rangeLabel()}還沒有紀錄。想到什麼時，再留下一點就好。`;
+ $('summaryText').textContent=recent.length?`${rangeLabel()}，你留下了 ${recent.length} 個片段、${photos} 張照片${likes?`，${likes} 筆喜歡`:''}${stars?`，${stars} 個節點`:''}。這裡不判斷是不是成果，只把你做過、看見過、感受過的收在一起。`:`${rangeLabel()}還沒有紀錄。想到什麼時，再留下一點就好。`;
  $('summaryList').innerHTML=recent.slice(0,6).map(x=>`<li>${ymd(eventStamp(x))}｜${esc((x.text||'(照片紀錄)').slice(0,42))}${x.photos.length?` · 📷${x.photos.length}`:''}</li>`).join('')
 }
 document.querySelectorAll('.rangeBtn').forEach(b=>b.onclick=()=>{summaryRange=b.dataset.range;document.querySelectorAll('.rangeBtn').forEach(x=>x.classList.toggle('active',x===b));render()});
 
 async function selectedText(){
  const items=await all(),recent=items.filter(x=>eventStamp(x)>=rangeStart()).sort((a,b)=>eventStamp(a)-eventStamp(b));
- return recent.map(x=>`[${ymd(eventStamp(x))}${x.dateOnly?'':` ${timeFmt(eventStamp(x))}`}]\n${x.text||'(照片紀錄)'}${x.photos.length?`\n📷 ${x.photos.length} 張照片`:''}${x.starred?'\n⭐ 我想記得':''}`).join('\n\n')
+ return recent.map(x=>`[${ymd(eventStamp(x))}${x.dateOnly?'':` ${timeFmt(eventStamp(x))}`}]\n${x.text||'(照片紀錄)'}${x.photos.length?`\n📷 ${x.photos.length} 張照片`:''}${x.liked?'\n♥ 喜歡':''}${x.starred?'\n★ 節點':''}`).join('\n\n')
 }
 async function copyText(t,msg){try{await navigator.clipboard.writeText(t);alert(msg)}catch{alert('無法自動複製，請稍後再試。')}}
 $('copyRecent').onclick=async()=>copyText(await selectedText(),`已複製${rangeLabel()}紀錄。`);
